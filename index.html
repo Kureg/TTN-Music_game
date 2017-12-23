@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>太鼓的な何か</title>
+  <meta charset="UTF-8">
+  <script>
+  var ctx;
+  var musicTime = 0, bpm = 120, noteJudgeTime = 3;
+  var notes = [
+    [1,2,1,2],
+    [1,1,2,2,1,1,2,2],
+  ];
+  var notesOne = [];
+  var notesTwo = [];
+
+  var greatTime = 0.1;
+  var goodTime = 0.2;
+  var badTime = 0.35;
+  var u = 0;
+  var k = 0;
+  var g = 0;
+  var gTime = 0;
+  var combo = 0;
+
+  document.onkeydown = function(e){
+    var key_code = e.keyCode;
+    if(key_code == 70 || key_code == 74){ //F,J面
+      document.getElementById("men").currentTime = 0.002;
+      document.getElementById("men").play();
+      menJudge();
+    }
+    if(key_code == 68 || key_code ==75){ //D,K縁
+      document.getElementById("fuchi").currentTime = 0.002;
+      document.getElementById("fuchi").play();
+      fuchiJudge();
+    }
+  }
+
+  function init(){
+    document.getElementById("men").volume = 0.5;
+    document.getElementById("fuchi").volume = 0.5;
+    var canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    notesRearrange();
+
+    function render(){
+      ctx.clearRect(0,0,800, 500);
+      ctx.strokeStyle = "#cccccc";
+      ctx.lineWidth = 2;
+      ctx.fillStyle = "#222222";
+      //レーン
+      ctx.fillRect(140, 160, 660, 120);
+      //判定の枠（大）
+      ctx.beginPath();
+      ctx.arc(200, 220, 35, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      //判定の枠（小）
+      ctx.beginPath();
+      ctx.arc(200, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      //面
+      for(var i = 0; i < notesOne.length; i++){
+        var x = 220 + (1 * ((notesOne[i] - musicTime) * 800 * 0.4));
+        ctx.fillStyle = "#cc3333"
+        ctx.beginPath();
+        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle="#ffffff";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.strokeStyle="#000000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      //縁
+      for(var i = 0; i < notesTwo.length; i++){
+        var x = 220 + (1 * ((notesTwo[i] - musicTime) * 800 * 0.4));
+        ctx.fillStyle = "#4466cc"
+        ctx.beginPath();
+        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle="#ffffff";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.strokeStyle="#000000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      //判定
+      if(gTime > 0 && g == 1){
+        ctx.font =  "28px 'Arial'";
+        ctx.fillStyle = "#FAAC58";
+        ctx.fillText("Great", 161, 180);
+        ctx.font =  "28px 'Arial'";
+        ctx.strokeStyle = "#000000";
+        ctx.strokeText("Great", 161, 180);
+        gTime -= 0.1
+      }
+      else if(gTime > 0 && g == 2){
+        ctx.font =  "28px 'Arial'";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("Good", 163, 180);
+        ctx.font =  "28px 'Arial'";
+        ctx.strokeStyle = "#000000";
+        ctx.strokeText("Good", 163, 180);
+        gTime -= 0.1
+      }
+      else if(gTime > 0 && g == 3){
+        ctx.font =  "28px 'Arial'";
+        ctx.fillStyle = "#2E64FE";
+        ctx.fillText("Bad", 165, 180);
+        ctx.font =  "28px 'Arial'";
+        ctx.strokeStyle = "#000000";
+        ctx.strokeText("Bad", 165, 180);
+        gTime -= 0.1
+      }
+      if((musicTime - notesOne[u]) > badTime / 2){
+        u += 1; combo = 0;
+      }
+      else if((musicTime - notesTwo[k]) > badTime / 2){
+        k += 1; combo = 0;
+      }
+      //コンボ数
+      ctx.fillStyle = "#F6E3CE";
+      ctx.fillRect(0, 160, 140, 120);
+      ctx.font =  "50px 'Arial'";
+      ctx.fillStyle = "#000000";
+      ctx.fillText(combo, 40, 230);
+
+      musicTime += 0.01 * bpm / 120;
+    }
+    setInterval(render, 10);
+  }
+
+  function menJudge(){
+    if(Math.abs(notesOne[u] - musicTime) <= greatTime / 2){
+      notesOne[u] = -1;
+      u += 1;
+      g = 1; gTime = 3; combo += 1;
+    }else if(Math.abs(notesOne[u] - musicTime) <= goodTime / 2){
+      notesOne[u] = -1;
+      u += 1; g = 2; gTime = 3; combo += 1;
+    }else if(Math.abs(notesOne[u] - musicTime) <= goodTime / 2){
+      notesOne[u] = -1;
+      u += 1; g = 3; gTime = 3; combo = 0;
+    }
+  }
+  function fuchiJudge(){
+    if(Math.abs(notesTwo[k] - musicTime) <= greatTime / 2){
+      notesTwo[k] = -1;
+      k +=  1; g = 1; gTime = 3; combo += 1;
+    }else if(Math.abs(notesTwo[k] - musicTime) <= goodTime / 2){
+      notesTwo[k] = -1;
+      k += 1; g = 2; gTime = 3; combo += 1;
+    }else if(Math.abs(notesTwo[k] - musicTime) <= goodTime / 2){
+      notesTwo[k] = -1;
+      k += 1; g = 3; gTime = 3; combo = 0;
+    }
+  }
+
+  function notesRearrange(){
+    for(i = 0; i < notes.length; i++){
+      for(j = 0; j < notes[i].length; j++){
+        if(notes[i][j] == 1){
+          v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
+          notesOne.push(v);
+        }
+        if(notes[i][j] == 2){
+          v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
+          notesTwo.push(v);
+        }
+      }
+    }
+  }
+
+  </script>
+</head>
+<body onload="init()">
+  <canvas id="canvas" width="800" height="500"></canvas>
+  <audio id="men" preload="auto">
+    <source src="men.wav" type="audio/wav">
+  </audio>
+  <audio id="fuchi" preload="auto">
+    <source src="fuchi.wav" type="audio/wav">
+  </audio>
+</body>
+</html>

@@ -118,9 +118,9 @@
   var notesOne = [];
   var notesTwo = [];
 
-  var autoTime = 0.02;
-  var greatTime = 0.033;
-  var goodTime = 0.15;
+  var autoTime = 0.05;
+  var greatTime = 0.05;
+  var goodTime = 0.2;
   var badTime = 0.35;
   var u = 0;
   var k = 0;
@@ -130,6 +130,7 @@
   var notesK = 0;
   var notesS = 0;
   var play = false;
+  var end = 0, start = 0;
 
   document.onkeydown = function(e){
     var key_code = e.keyCode;
@@ -145,6 +146,15 @@
         fuchiJudge();
       }
     }
+    if(!play){
+      if(key_code == 32){ //スペース
+        var s = new Date();
+        start = s.getTime();
+	document.getElementById("bgm").play();
+        play = true;
+        setInterval(render, 16);
+      }
+    }
   }
 
   function init(){
@@ -155,153 +165,172 @@
     ctx = canvas.getContext("2d");
     ctx.textAlign = "center";
     notesRearrange();
-    var end = 0, start = 0;
+    ctx.clearRect(0,0,800, 500);
+    ctx.strokeStyle = "#cccccc";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#222222";
+    //レーン
+    ctx.fillRect(140, 160, 660, 120);
+    //判定の枠（大）
+    ctx.beginPath();
+    ctx.arc(200, 220, 35, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.stroke();
+    //判定の枠（小）
+    ctx.beginPath();
+    ctx.arc(200, 220, 23, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.stroke();
+    //コンボ数
+    ctx.fillStyle = "#F6E3CE";
+    ctx.fillRect(0, 160, 140, 120);
+    ctx.font =  "50px 'Arial'";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(combo, 70, 235);
+    //待機
+    ctx.fillStyle = "#cccccc";
+    ctx.font = "30px 'Arial'";
+    ctx.fillText("Press the Spacebar", 380, 230);
+  }
 
-    function render(){
-      var s = new Date();
-      start = s.getTime();
-      if(!play){
-        document.getElementById("bgm").play();
-        play = true
+  function render(){
+    ctx.clearRect(0,0,800, 500);
+    ctx.strokeStyle = "#cccccc";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#222222";
+    //レーン
+    ctx.fillRect(140, 160, 660, 120);
+    //判定の枠（大）
+    ctx.beginPath();
+    ctx.arc(200, 220, 35, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.stroke();
+    //判定の枠（小）
+    ctx.beginPath();
+    ctx.arc(200, 220, 23, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.stroke();
+    //オート
+    if(auto){
+      if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2){
+        document.getElementById("men").currentTime = 0.002;
+        document.getElementById("men").play();
+        menJudge();
       }
-      ctx.clearRect(0,0,800, 500);
-      ctx.strokeStyle = "#cccccc";
-      ctx.lineWidth = 2;
-      ctx.fillStyle = "#222222";
-      //レーン
-      ctx.fillRect(140, 160, 660, 120);
-      //判定の枠（大）
-      ctx.beginPath();
-      ctx.arc(200, 220, 35, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.stroke();
-      //判定の枠（小）
-      ctx.beginPath();
-      ctx.arc(200, 220, 23, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.stroke();
-      //オート
-      if(auto){
-        if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2){
-          document.getElementById("men").currentTime = 0.002;
-          document.getElementById("men").play();
-          menJudge();
-        }
-        if(Math.abs(notesTwo[k] - musicTime) <= autoTime / 2){
-          document.getElementById("fuchi").currentTime = 0.002;
-          document.getElementById("fuchi").play();
-          fuchiJudge();
-        }
+      if(Math.abs(notesTwo[k] - musicTime) <= autoTime / 2){
+        document.getElementById("fuchi").currentTime = 0.002;
+        document.getElementById("fuchi").play();
+        fuchiJudge();
       }
-
-      //面
-      var notesL, notesJ;
-      if(notesK < 10){
-        notesL = 0;
-      }else{
-        notesL = notesK;
-      }
-      notesJ = notesL + 20;
-      if(notesJ > notesOne.length){
-        notesJ = notesOne.length;
-      }
-      for(var i = notesL; i < notesJ; i++){
-        var x = 200 + (1 * ((notesOne[i] - musicTime) * 800 * 0.4));
-        ctx.fillStyle = "#cc3333"
-        ctx.beginPath();
-        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle="#ffffff";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.strokeStyle="#000000";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, 220, 25, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.stroke();
-      }
-      //縁
-      if(notesS < 10){
-        notesL = 0;
-      }else{
-        notesL = notesS;
-      }
-      notesJ = notesL + 20;
-      if(notesJ > notesOne.length){
-        notesJ = notesOne.length;
-      }
-      for(var i = notesL; i < notesJ; i++){
-        var x = 200 + (1 * ((notesTwo[i] - musicTime) * 800 * 0.4));
-        ctx.fillStyle = "#4466cc"
-        ctx.beginPath();
-        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle="#ffffff";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.strokeStyle="#000000";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(x, 220, 25, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.stroke();
-      }
-      //判定
-      if(gTime > 0 && g == 1){
-        ctx.font =  "28px 'Arial'";
-        ctx.fillStyle = "#FAAC58";
-        ctx.fillText("Great", 200, 180);
-        ctx.font =  "28px 'Arial'";
-        ctx.strokeStyle = "#000000";
-        ctx.strokeText("Great", 200, 180);
-        gTime -= 0.1;
-      }
-      else if(gTime > 0 && g == 2){
-        ctx.font =  "28px 'Arial'";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText("Good", 200, 180);
-        ctx.font =  "28px 'Arial'";
-        ctx.strokeStyle = "#000000";
-        ctx.strokeText("Good", 200, 180);
-        gTime -= 0.1;
-      }
-      else if(gTime > 0 && g == 3){
-        ctx.font =  "28px 'Arial'";
-        ctx.fillStyle = "#2E64FE";
-        ctx.fillText("Bad", 200, 180);
-        ctx.font =  "28px 'Arial'";
-        ctx.strokeStyle = "#000000";
-        ctx.strokeText("Bad", 200, 180);
-        gTime -= 0.1;
-      }
-      if((musicTime - notesOne[u]) > badTime / 2){
-        u += 1; combo = 0; notesK += 1;
-      }
-      else if((musicTime - notesTwo[k]) > badTime / 2){
-        k += 1; combo = 0; notesS += 1;
-      }
-      //コンボ数
-      ctx.fillStyle = "#F6E3CE";
-      ctx.fillRect(0, 160, 140, 120);
-      ctx.font =  "50px 'Arial'";
-      ctx.fillStyle = "#000000";
-      ctx.fillText(combo, 70, 235);
-
-      var e = new Date();
-      end = e.getTime();
-
-      musicTime += 0.01 * bpm / 120 + (end-start)/1000000;
     }
-    setInterval(render, 10);
+
+    //面
+    var notesL, notesJ;
+    if(notesK < 10){
+      notesL = 0;
+    }else{
+      notesL = notesK;
+    }
+    notesJ = notesL + 20;
+    if(notesJ > notesOne.length){
+      notesJ = notesOne.length;
+    }
+    for(var i = notesL; i < notesJ; i++){
+      var x = 200 + (1 * ((notesOne[i] - musicTime) * 800 * 0.4));
+      ctx.fillStyle = "#cc3333"
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#ffffff";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    //縁
+    if(notesS < 10){
+      notesL = 0;
+    }else{
+      notesL = notesS;
+    }
+    notesJ = notesL + 20;
+    if(notesJ > notesOne.length){
+      notesJ = notesOne.length;
+    }
+    for(var i = notesL; i < notesJ; i++){
+      var x = 200 + (1 * ((notesTwo[i] - musicTime) * 800 * 0.4));
+      ctx.fillStyle = "#4466cc"
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#ffffff";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    //判定
+    if(gTime > 0 && g == 1){
+      ctx.font =  "28px 'Arial'";
+      ctx.fillStyle = "#FAAC58";
+      ctx.fillText("Great", 200, 180);
+      ctx.font =  "28px 'Arial'";
+      ctx.strokeStyle = "#000000";
+      ctx.strokeText("Great", 200, 180);
+      gTime -= 0.1;
+    }
+    else if(gTime > 0 && g == 2){
+      ctx.font =  "28px 'Arial'";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillText("Good", 200, 180);
+      ctx.font =  "28px 'Arial'";
+      ctx.strokeStyle = "#000000";
+      ctx.strokeText("Good", 200, 180);
+      gTime -= 0.1;
+    }
+    else if(gTime > 0 && g == 3){
+      ctx.font =  "28px 'Arial'";
+      ctx.fillStyle = "#2E64FE";
+      ctx.fillText("Bad", 200, 180);
+      ctx.font =  "28px 'Arial'";
+      ctx.strokeStyle = "#000000";
+      ctx.strokeText("Bad", 200, 180);
+      gTime -= 0.1;
+    }
+    if((musicTime - notesOne[u]) > badTime / 2){
+      u += 1; combo = 0; notesK += 1;
+    }
+    else if((musicTime - notesTwo[k]) > badTime / 2){
+      k += 1; combo = 0; notesS += 1;
+    }
+    //コンボ数
+    ctx.fillStyle = "#F6E3CE";
+    ctx.fillRect(0, 160, 140, 120);
+    ctx.font =  "50px 'Arial'";
+    ctx.fillStyle = "#000000";
+    ctx.fillText(combo, 70, 235);
+
+    var e = new Date();
+    end = e.getTime();
+    musicTime += 0.016 * bpm / 120 + (end-start)/1000000;
+    var s = new Date();
+    start = s.getTime();
   }
 
   function menJudge(){
@@ -348,7 +377,7 @@
   </script>
 </head>
 <body onload="init()">
-  <canvas id="canvas" width="800" height="500"></canvas>
+  <canvas id="canvas" width="800" height="400"></canvas>
   <audio preload="auto" id="bgm">
     <source src="bgm/na1.wav" type="audio/wav">
   </audio>

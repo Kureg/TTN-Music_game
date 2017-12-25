@@ -118,6 +118,7 @@
   var notesOne = [];
   var notesTwo = [];
 
+  var autoTime = 0.02;
   var greatTime = 0.033;
   var goodTime = 0.15;
   var badTime = 0.35;
@@ -128,6 +129,7 @@
   var combo = 0;
   var notesK = 0;
   var notesS = 0;
+  var play = false;
 
   document.onkeydown = function(e){
     var key_code = e.keyCode;
@@ -153,8 +155,15 @@
     ctx = canvas.getContext("2d");
     ctx.textAlign = "center";
     notesRearrange();
+    var end = 0, start = 0;
 
     function render(){
+      var s = new Date();
+      start = s.getTime();
+      if(!play){
+        document.getElementById("bgm").play();
+        play = true
+      }
       ctx.clearRect(0,0,800, 500);
       ctx.strokeStyle = "#cccccc";
       ctx.lineWidth = 2;
@@ -173,12 +182,12 @@
       ctx.stroke();
       //オート
       if(auto){
-        if(Math.abs(notesOne[u] - musicTime) <= greatTime / 2){
+        if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2){
           document.getElementById("men").currentTime = 0.002;
           document.getElementById("men").play();
           menJudge();
         }
-        if(Math.abs(notesTwo[k] - musicTime) <= greatTime / 2){
+        if(Math.abs(notesTwo[k] - musicTime) <= autoTime / 2){
           document.getElementById("fuchi").currentTime = 0.002;
           document.getElementById("fuchi").play();
           fuchiJudge();
@@ -287,7 +296,10 @@
       ctx.fillStyle = "#000000";
       ctx.fillText(combo, 70, 235);
 
-      musicTime += 0.010002 * bpm / 120;
+      var e = new Date();
+      end = e.getTime();
+
+      musicTime += 0.01 * bpm / 120 + (end-start)/1000000;
     }
     setInterval(render, 10);
   }
@@ -337,7 +349,7 @@
 </head>
 <body onload="init()">
   <canvas id="canvas" width="800" height="500"></canvas>
-  <audio autoplay id="bgm">
+  <audio preload="auto" id="bgm">
     <source src="bgm/na1.wav" type="audio/wav">
   </audio>
   <audio id="men" preload="auto">

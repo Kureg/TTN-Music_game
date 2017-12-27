@@ -1,0 +1,66 @@
+body{
+  background-color: #A9F5BC;
+  background-image: url(../img/bg.gif);
+  width: 800px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+canvas{
+  border-width: 1px;
+  border-style: solid;
+  border-color: #000000;
+}
+h5{
+  margin: 10px 0 20px 0;
+}
+@font-face {
+  font-family: 'りいてがき筆';
+  src: url('../font/RiiT_F.otf') format('opentype');
+}
+
+#header{
+  height: 100px;
+}
+#title{
+  width: 400px;
+  position: relative;
+  top: 20px;
+  left: 30px;
+  font-size: 36px;
+  font-family: "りいてがき筆";
+}
+#version{
+  position: relative;
+  top: -40px;
+  left: 260px;
+}
+#ver{
+  font-size: 36px;
+  font-family: "りいてがき筆","Times New Roman", Symbol;
+}
+#no{
+  position: relative;
+  left: 10px;
+  font-size: 20px;
+  font-style: italic;
+  font-family: "りいてがき筆";
+}
+#continue{
+  margin: 0 auto;
+}
+.continue{
+  width: 120px;
+  padding: 10px 0 0 0;
+  text-align: center;
+  font-size: 16px;
+}
+#footer{
+  width:800px;
+  font-family: "Arial";
+  text-align: center;
+  font-size: 15px;
+}
+.copy-link{
+  text-decoration: none;
+  color: #000000;
+}

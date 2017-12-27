@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +8,10 @@
   <meta name="description" content="某太鼓ゲーム風のブラウザゲームです。Chromeのみ対応しています">
   <meta name="keywords" content="太鼓的な何か,ブラウザゲーム,フリーゲーム">
   <link rel="stylesheet" href="css/default.css" type="text/css">
+  <link rel="stylesheet" href="css/rule.css" type="text/css">
+  <script src="js/rule.js"></script>
 </head>
-<body>
+<body onload="init()">
   <div id="header">
     <h1 id="title">太鼓的な何か</h1>
     <div id="version">
@@ -39,41 +42,29 @@
       </td>
       <td id="space" rowspan="2"></td>
       <td id="main" rowspan="2">
+        <h2>遊び方</h2>
         <p>
-        Flashが2020年末に更新終了となるので、<br>
-        折角だからHTML5のブラウザゲームを作ろうという思いつきで、<br>
-        某太鼓ゲームのようなものをCanvasとJavaScriptを使って作ってみた。<br>
-        <br>
-        <span id="font-description">
-        『太鼓的な何か』のフォントはりい様のフォントを使用させて頂きました。<br>
-        フォントのリンク先は<a href="http://aoirii.babyblue.jp/font/riitf/index.html">ここ</a>をクリック
-        </span>
+        流れてくる音符が枠に重なったら特定のキーを押す。<br><br>
         </p>
+        <table>
+          <tr>
+            <td rowspan="3">
+              <canvas id="canvas" width="100" height="250"></canvas>
+            </td>
+            <td class="notes-description">赤い音符はFキーもしくはJキーを押す。</td>
+          </tr>
+          <tr>
+            <td class="notes-description">青い音符はDキーもしくはKキーを押す。</td>
+          </tr>
+            <td class="notes-description">黄色い音符は枠の上に流れている間、D・F・J・Kのいずれかのキーを連打する。</td>
+          </tr>
+        </table>
+        <br>
 
         <h5>スポンサードリンク</h5>
         <div id="sponsored-link1">
 
         </div>
-
-        <p id="caution">
-        ※注意<br>
-        ・ブラウザは「<span class="red">Google Chrome</span>」を使用してください。<br>
-        （他のブラウザでは処理落ちがひどいためChromeのみにm(_ _)m）<br>
-        ・PCのスペックは割と高いほうがいい。<br>
-        （Intel Core i5 3000番台以上のスペックのPCが推奨）<br>
-        ・JavaScriptを有効にしてプレイしてください。
-        </p>
-
-        <h4>更新情報</h4>
-        <iframe src="news.html" id="news">
-        </iframe>
-
-        <h4>新着譜面</h4>
-        <table id="humen-info">
-          <tr><td class="name">曲名</td><td class="description">説明</td><td class="level">難易度</td></tr>
-          <tr><td class="name2"><a href="category/namco/na2.html">蒼の旋律</a></td><td class="description2">一時期ゲームセンターでこの曲が流れまくった</td><td class="level2">4/6/7/9(10)</td></tr>
-          <tr><td class="name2"><a href="category/namco/na1.html">エンジェルドリーム</a></td><td class="description2">某アイドルゲームでも収録されたナムコオリジナル曲</td><td class="level2">3/6/7/8</td></tr>
-        </table>
 
       </td>
     </tr>

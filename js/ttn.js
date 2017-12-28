@@ -4,13 +4,14 @@ var autoTime = 0.05;
 var greatTime = 0.05;
 var goodTime = 0.2;
 var badTime = 0.35;
-var u = 0, k = 0, r = 0, g = 0;
+var u = 0, r = 0, g = 0;
 var gTime = 0;
 var autoRen = 0;
+var bpm_c = 0, scroll_c= 1;
 var combo = 0; var maxCombo = 0; var scoreCombo = 0;
 var score = 0, scoreBasic = 0, scoreAdd = 0, scoreTime = 0;
 var scoreGauge = 0, scoreGaugeMax, scoreGaugeNorma;
-var notesK = 0, notesS = 0,notesG = 0;
+var notesK = 0;
 var play = false;
 var userAgent;
 
@@ -20,12 +21,12 @@ document.onkeydown = function(e){
     if(key_code == 70 || key_code == 74){ //F,J面
       document.getElementById("men").currentTime = 0.002;
       document.getElementById("men").play();
-      menJudge();
+      Judge(1);
     }
     if(key_code == 68 || key_code ==75){ //D,K縁
       document.getElementById("fuchi").currentTime = 0.002;
       document.getElementById("fuchi").play();
-      fuchiJudge();
+      Judge(2);
     }
   }
   if(!play && userAgent.indexOf('chrome') != -1){
@@ -151,21 +152,21 @@ function render(){
   ctx.strokeRect(624, 126, 0, 30);
   //オート
   if(auto){
-    if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2){
+    if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2 && notesTwo[u] == 1){
       document.getElementById("men").currentTime = 0.002;
       document.getElementById("men").play();
-      menJudge();
+      Judge(1);
     }
-    if(Math.abs(notesTwo[k] - musicTime) <= autoTime / 2){
+    if(Math.abs(notesOne[u] - musicTime) <= autoTime / 2 && notesTwo[u] == 2){
       document.getElementById("fuchi").currentTime = 0.002;
       document.getElementById("fuchi").play();
-      fuchiJudge();
+      Judge(2);
     }
     if(notesFive[r] < musicTime && notesEight[r] > musicTime){
       if(autoRen <= 0){
       document.getElementById("men").currentTime = 0.002;
       document.getElementById("men").play();
-      menJudge();
+      Judge(1);
       autoRen = 4;
       }
       else{
@@ -174,119 +175,109 @@ function render(){
     }
   }
 
-  //面
+  //音符
   var notesL, notesJ;
   if(notesK < 10){
     notesL = 5;
   }else{
     notesL = notesK;
   }
-  notesJ = notesL + 20;
+  notesJ = notesL + 34;
   if(notesJ > notesOne.length){
     notesJ = notesOne.length;
   }
-  for(var i = notesL - 5; i < notesJ; i++){
-    var x = 200 + (1 * ((notesOne[i] - musicTime) * 800 * 0.4));
-    ctx.fillStyle = "#cc3333";
-    ctx.beginPath();
-    ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle="#ffffff";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.strokeStyle="#000000";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(x, 220, 25, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-  }
-  //縁
-  if(notesS < 10){
-    notesL = 5;
-  }else{
-    notesL = notesS;
-  }
-  notesJ = notesL + 20;
-  if(notesJ > notesOne.length){
-    notesJ = notesOne.length;
-  }
-  for(var i = notesL - 5; i < notesJ; i++){
-    var x = 200 + (1 * ((notesTwo[i] - musicTime) * 800 * 0.4));
-    ctx.fillStyle = "#4466cc";
-    ctx.beginPath();
-    ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle="#ffffff";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(x, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.strokeStyle="#000000";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(x, 220, 25, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-  }
-  //連打
-  if(notesG < 3){
-    notesL = 1;
-  }else{
-    notesL = notesG;
-  }
-  notesJ = notesL + 5;
-  if(notesJ > notesFive.length){
-    notesJ = notesFive.length;
-  }
-  for(var i = notesL - 1; i < notesJ; i++){
-    var xa = 200 + (1 * ((notesFive[i] - musicTime) * 800 * 0.4));
-    var xb = 200 + (1 * ((notesEight[i] - musicTime) * 800 * 0.4));
-    ctx.fillStyle = "#cccc33";
-    ctx.beginPath();
-    ctx.arc(xb, 220, 25, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle="#000000";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(xb, 220, 25, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
+  for(var i = notesJ; i >= notesL - 5; i--){
+    var xa;
+    var xb;
+    //赤
+    if(notesTwo[i] == 1){
+      var x = 200 + ((notesOne[i] - musicTime) * 800 * 0.4 * scrolllist[i]);
+      ctx.fillStyle = "#cc3333";
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#ffffff";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
 
-    ctx.fillRect(xa, 195, xb - xa, 50);
-    ctx.beginPath();
-    ctx.moveTo(xa, 195);
-    ctx.lineTo(xb, 195);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(xa, 245);
-    ctx.lineTo(xb, 245);
-    ctx.stroke();
+    //青
+    else if(notesTwo[i] == 2){
+      var x = 200 + ((notesOne[i] - musicTime) * 800 * 0.4 * scrolllist[i]);
+      ctx.fillStyle = "#4466cc";
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#ffffff";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(x, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(x, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    //連打
+    else if(notesTwo[i] == 5){
+      xa = 200 + ((notesOne[i] - musicTime) * 800 * 0.4 * scrolllist[i]);
+      ctx.fillRect(xa, 195, xb - xa, 50);
+      ctx.beginPath();
+      ctx.moveTo(xa, 195);
+      ctx.lineTo(xb, 195);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(xa, 245);
+      ctx.lineTo(xb, 245);
+      ctx.stroke();
 
-    ctx.beginPath();
-    ctx.arc(xa, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle="#ffffff";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(xa, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.strokeStyle="#000000";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(xa, 220, 25, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(xa, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#ffffff";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(xa, 220, 23, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(xa, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
+    else if(notesTwo[i] == 8){
+      xb = 200 + ((notesOne[i] - musicTime) * 800 * 0.4 * scrolllist[i]);
+      ctx.fillStyle = "#cccc33";
+      ctx.beginPath();
+      ctx.arc(xb, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle="#000000";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(xb, 220, 25, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
   }
+
   //判定
   ctx.textAlign = "center";
   if(gTime > 0 && g == 1){
@@ -316,14 +307,11 @@ function render(){
     ctx.strokeText("Bad", 200, 180);
     gTime -= 0.1;
   }
-  if((musicTime - notesOne[u]) > badTime / 2){
+  if((musicTime - notesOne[u]) > badTime / 2 && notesTwo[u] != 5 && notesTwo[u] != 8){
     u += 1; combo = 0; notesK += 1; scoreGauge -= 2;
   }
-  else if((musicTime - notesTwo[k]) > badTime / 2){
-    k += 1; combo = 0; notesS += 1; scoreGauge -= 2;
-  }
   else if((musicTime - notesEight[r]) > badTime / 2){
-    r += 1; notesG += 1;
+    u += 2; r += 1; notesK += 2;
     if(auto){
       autoRen = 0;
     }
@@ -351,85 +339,54 @@ function render(){
     scoreTime -= 1;
   }
 
+  if(bpmchangetime[bpm_c] <= musicTime){
+    bpm = bpmchange[bpm_c];
+    bpm_c += 1;
+  }
+
+  bbl += 1;
   musicTime += 0.016 * bpm/120;
 }
 
-function menJudge(){
-  if(Math.abs(notesOne[u] - musicTime) <= greatTime / 2){
-    notesOne[u] = -1;
-    u += 1;
-    g = 1; gTime = 3; combo += 1; notesK += 1; scoreGauge += 1;
-    scoreAdd = shokou + kousa * kosa(combo);
-    score += scoreAdd;
-    scoreTime = 20;
-    if(combo % 100 == 0 && combo != 0){
-      scoreAdd = 10000 + scoreAdd;
-      score += 10000;
+function Judge(num){
+  if(notesTwo[u] != 5 && notesTwo[u] != 8){
+    if(Math.abs(notesOne[u] - musicTime) <= greatTime / 2  && notesTwo[u] == num){
+      notesOne[u] = -1;
+      u += 1;
+      g = 1; gTime = 3; combo += 1; notesK += 1; scoreGauge += 1;
+      scoreAdd = shokou + kousa * kosa(combo);
+      score += scoreAdd;
+      scoreTime = 20;
+      if(combo % 100 == 0 && combo != 0){
+        scoreAdd = 10000 + scoreAdd;
+        score += 10000;
+      }
+      if(scoreGauge > scoreGaugeMax){
+        scoreGauge = scoreGaugeMax;
+      }
+    }else if(Math.abs(notesOne[u] - musicTime) <= goodTime / 2 && notesTwo[u] == num){
+      notesOne[u] = -1;
+      u += 1; g = 2; gTime = 3; combo += 1; notesK += 1; scoreGauge += 0.5;
+      var tenDigit = Math.floor(((shokou + kousa * kosa(combo)) / 2) / 10);
+      scoreAdd = tenDigit * 10;
+      score += scoreAdd;
+      scoreTime = 20;
+      if(combo % 100 == 0 && combo != 0){
+        scoreAdd = 10000 + scoreAdd;
+        score += 10000;
+      }
+      if(scoreGauge > scoreGaugeMax){
+        scoreGauge = scoreGaugeMax;
+      }
+    }else if(Math.abs(notesOne[u] - musicTime) <= badTime / 2 && notesTwo[u] == num){
+      notesOne[u] = -1;
+      u += 1; g = 3; gTime = 3; combo = 0; notesK += 1; scoreGauge -= 2;
+      if(scoreGauge < 0){
+        scoreGauge = 0
+      }
     }
-    if(scoreGauge > scoreGaugeMax){
-      scoreGauge = scoreGaugeMax;
-    }
-  }else if(Math.abs(notesOne[u] - musicTime) <= goodTime / 2){
-    notesOne[u] = -1;
-    u += 1; g = 2; gTime = 3; combo += 1; notesK += 1; scoreGauge += 0.5;
-    var tenDigit = Math.floor(((shokou + kousa * kosa(combo)) / 2) / 10);
-    scoreAdd = tenDigit * 10;
-    score += scoreAdd;
-    scoreTime = 20;
-    if(combo % 100 == 0 && combo != 0){
-      scoreAdd = 10000 + scoreAdd;
-      score += 10000;
-    }
-    if(scoreGauge > scoreGaugeMax){
-      scoreGauge = scoreGaugeMax;
-    }
-  }else if(Math.abs(notesOne[u] - musicTime) <= badTime / 2){
-    notesOne[u] = -1;
-    u += 1; g = 3; gTime = 3; combo = 0; notesK += 1; scoreGauge -= 2;
-    if(scoreGauge < 0){
-      scoreGauge = 0
-    }
-  }else if(notesFive[r] < musicTime && notesEight[r] > musicTime){
-    scoreAdd = 200;
-    score += scoreAdd;
-    scoreTime = 20;
   }
-}
-function fuchiJudge(){
-  if(Math.abs(notesTwo[k] - musicTime) <= greatTime / 2){
-    notesTwo[k] = -1;
-    k +=  1; g = 1; gTime = 3; combo += 1; notesS += 1; scoreGauge += 1;
-    scoreAdd = shokou + kousa * kosa(combo);
-    score += scoreAdd;
-    scoreTime = 20;
-    if(combo % 100 == 0 && combo != 0){
-      scoreAdd = 10000 + scoreAdd;
-      score += 10000;
-    }
-    if(scoreGauge > scoreGaugeMax){
-      scoreGauge = scoreGaugeMax;
-    }
-  }else if(Math.abs(notesTwo[k] - musicTime) <= goodTime / 2){
-    notesTwo[k] = -1;
-    k += 1; g = 2; gTime = 3; combo += 1; notesS += 1; scoreGauge += 0.5;
-    var tenDigit = Math.floor(((shokou + kousa * kosa(combo)) / 2) / 10);
-    scoreAdd = tenDigit * 10;
-    score += scoreAdd;
-    scoreTime = 20;
-    if(combo % 100 == 0 && combo != 0){
-      scoreAdd = 10000 + scoreAdd;
-      score += 10000;
-    }
-    if(scoreGauge > scoreGaugeMax){
-      scoreGauge = scoreGaugeMax;
-    }
-  }else if(Math.abs(notesTwo[k] - musicTime) <= badTime / 2){
-    notesTwo[k] = -1;
-    k += 1; g = 3; gTime = 3; combo = 0; notesS += 1; scoreGauge -= 2;
-    if(scoreGauge < 0){
-      scoreGauge = 0
-    }
-  }else if(notesFive[r] < musicTime && notesEight[r] > musicTime){
+  if(notesFive[r] < musicTime && notesEight[r] > musicTime){
     scoreAdd = 200;
     score += scoreAdd;
     scoreTime = 20;
@@ -437,26 +394,72 @@ function fuchiJudge(){
 }
 
 function notesRearrange(){
+  var v = noteJudgeTime;
+  var bpm_a = bpm, scroll_a = scroll;
+  var bpm_b = bpm;
   for(i = 0; i < notes.length; i++){
+    var jk = 0;
     for(j = 0; j < notes[i].length; j++){
-      if(notes[i][j] == 1 || notes[i][j] == 3){
-        v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
-        scoreBasic += 1; scoreCombo += 1;
+      if(notes[i][j] == 0){
+        v += 2 * (measureA / measureB) / (notes[i].length - jk);
+        continue;
+      }
+      else if(notes[i][j] == 1 || notes[i][j] == 3){
         notesOne.push(v);
-      }
-      if(notes[i][j] == 2 || notes[i][j] == 4){
-        v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
+        notesTwo.push(1);
+        bpmlist.push(bpm_a);
+        scrolllist.push(scroll_a);
+        v += 2 * (measureA / measureB) / (notes[i].length - jk);
         scoreBasic += 1; scoreCombo += 1;
-        notesTwo.push(v);
+        continue;
       }
-      if(notes[i][j] == 5){
-        v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
+      else if(notes[i][j] == 2 || notes[i][j] == 4){
+        notesOne.push(v);
+        notesTwo.push(2);
+        bpmlist.push(bpm_a);
+        scrolllist.push(scroll_a);
+        v += 2 * (measureA / measureB) / (notes[i].length - jk);
+        scoreBasic += 1; scoreCombo += 1;
+        continue;
+      }
+      else if(notes[i][j] == 5 || notes[i][j] == 6 || notes[i][j] == 7){
+        notesOne.push(v);
+        notesTwo.push(5);
         notesFive.push(v);
+        bpmlist.push(bpm_a);
+        scrolllist.push(scroll_a);
+        v += 2 * (measureA / measureB) / (notes[i].length - jk);
+        continue;
       }
-      if(notes[i][j] == 8){
-        v = noteJudgeTime + i * 2 + (j * 2 / notes[i].length);
+      else if(notes[i][j] == 8){
+        notesOne.push(v);
+        notesTwo.push(8);
         notesEight.push(v);
+        bpmlist.push(bpm_a);
+        scrolllist.push(scroll_a);
+        v += 2 * (measureA / measureB) / (notes[i].length - jk);
+        continue;
       }
+
+      var ij = notes[i][j];
+      ij.toString();
+      if(ij.substr(0, 8) == "#MEASURE"){
+        var mea = ij.slice(9);
+        var kea = mea.split("/");
+        measureA = kea[0];
+        measureB = kea[1]
+        Number(measureA);
+        Number(measureB);
+      }
+      else if(ij.substr(0, 10) == "#BPMCHANGE"){
+        bpm_a = parseInt(ij.slice(11), 10);
+        bpmchange.push(bpm_a);
+        bpmchangetime.push(v);
+      }
+      else if(notes[i][j].substr(0, 7) == "#SCROLL"){
+        scroll_a = parseFloat(ij.slice(8), 10)
+      }
+      jk += 1;
     }
   }
 

@@ -1,6 +1,10 @@
 // 基本情報
 var name = "エンジェルドリーム";
 var musicTime = 0, bpm = 180, soundStart = 1500, soundVolume = 30;
+var measureA = 4, measureB = 4;
+var scroll = 1;
+var bpmlist = [], bpmchange = [], bpmchangetime = [];
+var scrolllist = [];
 var noteJudgeTime = 3;
 var mode = 4; difficulty = 8;
 var shokou, kousa;

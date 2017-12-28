@@ -1,10 +1,14 @@
 // 基本情報
 var name = "蒼の旋律";
-var musicTime = 0, bpm = 196, soundStart = 116, soundVolume = 30;
+var musicTime = 0, bpm = 196, soundStart = 100, soundVolume = 30;
+var measureA = 4, measureB = 4;
+var scroll = 1;
+var bpmlist = [], bpmchange = [], bpmchangetime = [];
+var scrolllist = [];
 var noteJudgeTime = 3;
 var mode = 5; difficulty = 10;
 var shokou, kousa;
-var auto = false;
+var auto = true;
 var notes = [
   [3,3,0,0,0,0,0,0],
   [3,3,0,0,0,0,0,0],

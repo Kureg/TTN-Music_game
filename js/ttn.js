@@ -13,7 +13,11 @@ var score = 0, scoreBasic = 0, scoreAdd = 0, scoreTime = 0;
 var scoreGauge = 0, scoreGaugeMax, scoreGaugeNorma;
 var notesK = 0;
 var play = false;
+var playOn;
+var end = false, endTime;
 var userAgent;
+var ready = false;
+var mode;
 
 document.onkeydown = function(e){
   var key_code = e.keyCode;
@@ -29,9 +33,38 @@ document.onkeydown = function(e){
       Judge(2);
     }
   }
-  if(!play && userAgent.indexOf('chrome') != -1){
+  if(ready && !play && userAgent.indexOf('chrome') != -1){
     if(key_code == 32){ //スペース
-      setInterval(render, 16);
+      playOn = setInterval(render, 16);
+    }
+  }
+  if(!ready){
+    if(key_code == 49){ // 1：easy
+      mode = 1;
+      ready = true;
+      start();
+    }
+    if(key_code == 50){ // 2：normal
+      mode = 2;
+      ready = true;
+      start();
+    }
+    if(key_code == 51){ // 3：hard
+      mode = 3;
+      ready = true;
+      start();
+    }
+    if(key_code == 52){ // 4：insane
+      mode = 4;
+      ready = true;
+      start();
+    }
+    if(key_code == 53){ // 5：?
+      if(max_mode == 5){
+        mode = 5
+        ready = true;
+        start();
+      }
     }
   }
 }
@@ -44,28 +77,9 @@ function init(){
   ctx = canvas.getContext("2d");
   userAgent = window.navigator.userAgent.toLowerCase();
   if(userAgent.indexOf('chrome') != -1){
-    ctx.textAlign = "center";
-    notesRearrange();
-    scoreSystem();
-    ctx.clearRect(0,0,800, 500);
     //背景
     ctx.fillStyle = "#F6E3CE";
     ctx.fillRect(0,0,800,400);
-    //レーン
-    ctx.fillStyle = "#222222";
-    ctx.fillRect(140, 160, 660, 120);
-    //判定の枠（大）
-    ctx.strokeStyle = "#cccccc";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(200, 220, 35, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
-    //判定の枠（小）
-    ctx.beginPath();
-    ctx.arc(200, 220, 23, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.stroke();
     //名前
     ctx.textAlign = "left";
     ctx.font = "34px 'りいてがき筆'";
@@ -75,25 +89,13 @@ function init(){
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 1;
     ctx.strokeText(name, 20, 40);
-    //スコアゲージ
-    ctx.lineWidth = 2;
-    ctx.fillStyle = "#333333";
-    ctx.fillRect(400, 126, 400, 30);
-    ctx.strokeStyle = "#cccccc";
-    ctx.strokeRect(624, 126, 0, 30);
-    //コンボ数0
-    ctx.fillStyle = "#F5D0A9";
-    ctx.fillRect(0, 160, 140, 120);
-    //待機
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#cccccc";
-    ctx.font = "30px 'Arial'";
-    ctx.fillText("Press the Spacebar", 380, 230);
-    //スコア
-    ctx.textAlign = "right";
-    ctx.font = "40px 'Arial'";
-    ctx.fillStyle = "#000000";
-    ctx.fillText(score, 790, 110);
+    //難易度表示
+    ctx.fillStyle = "#000000"
+    ctx.font = "34px 'Arial'";
+    ctx.fillText("1：Easy", 100, 120);
+    ctx.fillText("2：Normal", 100, 180);
+    ctx.fillText("3：Hard", 100, 240);
+    ctx.fillText("4：Insane", 100, 300);
   }else{
     ctx.textAlign = "center";
     ctx.fillStyle = "#000000";
@@ -339,13 +341,128 @@ function render(){
     scoreTime -= 1;
   }
 
+  if(!end && u == notesOne.length){
+    endTime = 3;
+    end = true;
+  }
+  if(end){
+    endTime -= 0.02;
+  }
+  if(end && endTime <= 0){
+    clearInterval(playOn);
+    result();
+  }
+
   if(bpmchangetime[bpm_c] <= musicTime){
     bpm = bpmchange[bpm_c];
     bpm_c += 1;
   }
 
-  bbl += 1;
   musicTime += 0.016 * bpm/120;
+}
+
+function start(){
+  ctx.textAlign = "center";
+  notesRearrange();
+  scoreSystem();
+  ctx.clearRect(0,0,800, 500);
+  //背景
+  ctx.fillStyle = "#F6E3CE";
+  ctx.fillRect(0,0,800,400);
+  //レーン
+  ctx.fillStyle = "#222222";
+  ctx.fillRect(140, 160, 660, 120);
+  //判定の枠（大）
+  ctx.strokeStyle = "#cccccc";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(200, 220, 35, 0, 2 * Math.PI);
+  ctx.closePath();
+  ctx.stroke();
+  //判定の枠（小）
+  ctx.beginPath();
+  ctx.arc(200, 220, 23, 0, 2 * Math.PI);
+  ctx.closePath();
+  ctx.stroke();
+  //名前
+  ctx.textAlign = "left";
+  ctx.font = "34px 'りいてがき筆'";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(name, 20, 40);
+  ctx.font = "34px 'りいてがき筆'";
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 1;
+  ctx.strokeText(name, 20, 40);
+  //スコアゲージ
+  ctx.lineWidth = 2;
+  ctx.fillStyle = "#333333";
+  ctx.fillRect(400, 126, 400, 30);
+  ctx.strokeStyle = "#cccccc";
+  ctx.strokeRect(624, 126, 0, 30);
+  //コンボ数0
+  ctx.fillStyle = "#F5D0A9";
+  ctx.fillRect(0, 160, 140, 120);
+  //待機
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#cccccc";
+  ctx.font = "30px 'Arial'";
+  ctx.fillText("Press the Spacebar", 380, 230);
+  //スコア
+  ctx.textAlign = "right";
+  ctx.font = "40px 'Arial'";
+  ctx.fillStyle = "#000000";
+  ctx.fillText(score, 790, 110);
+}
+
+function result(){
+  ctx.textAlign = "center";
+  ctx.clearRect(0,0,800, 500);
+  //背景
+  ctx.fillStyle = "#F6E3CE";
+  ctx.fillRect(0,0,800,400);
+  //名前
+  ctx.textAlign = "left";
+  ctx.font = "34px 'りいてがき筆'";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(name, 20, 40);
+  ctx.font = "34px 'りいてがき筆'";
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 1;
+  ctx.strokeText(name, 20, 40);
+  //スコアゲージ
+  ctx.lineWidth = 2;
+  ctx.fillStyle = "#333333";
+  ctx.fillRect(96, 136, 408, 38);
+  if(scoreGauge >= scoreGaugeMax){
+    ctx.fillStyle = "#ffff33";
+  }else{
+    ctx.fillStyle = "#ff3333";
+  }
+  ctx.fillRect(100, 140, 400 * scoreGauge / scoreGaugeMax, 30);
+  ctx.strokeStyle = "#cccccc";
+  ctx.strokeRect(324, 140, 0, 30);
+  //スコア
+  ctx.textAlign = "right";
+  ctx.font = "50px 'Arial'";
+  ctx.fillStyle = "#000000";
+  ctx.fillText(score, 500, 130);
+  //コメント
+  ctx.textAlign = "center";
+  ctx.font = "44px 'りいてがき筆'";
+  if(scoreGauge >= scoreGaugeNorma){
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("ノルマクリア成功", 300, 200);
+    ctx.strokeStyle = "#ff3333";
+    ctx.lineWidth = 2;
+    ctx.strokeText("ノルマクリア成功", 300, 200);
+  }
+  else{
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("ノルマクリア失敗", 300, 200);
+    ctx.strokeStyle = "#3333ff";
+    ctx.lineWidth = 2;
+    ctx.strokeText("ノルマクリア失敗", 300, 200);
+  }
 }
 
 function Judge(num){
@@ -394,6 +511,24 @@ function Judge(num){
 }
 
 function notesRearrange(){
+  var notes = [];
+  switch (mode) {
+    case 1:
+    notes = notesEasy;
+    break;
+    case 2:
+    notes = notesNormal;
+    break;
+    case 3:
+    notes = notesHard;
+    break;
+    case 4:
+    notes = notesInsane;
+    break;
+    case 5:
+    notes = notesInsaneTwo;
+    break;
+  }
   var v = noteJudgeTime;
   var bpm_a = bpm, scroll_a = scroll;
   var bpm_b = bpm;
@@ -470,7 +605,7 @@ function scoreSystem(){
   scoreGaugeNorma = scoreBasic * 0.56;
   var tenjoKari;
 
-  switch(difficulty){
+  switch(difficulty[mode-1]){
     case 1:
     switch(mode){
       case 1:

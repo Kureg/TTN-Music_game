@@ -162,7 +162,7 @@ h5{
 #humen-info tr:nth-child(2n + 3) td{
   background-color: #F5A9A9;
 }
-#humen-info tr:nth-child(2) td {
+#humen-info tr:nth-child(2n) td {
   background-color: #CED8F6;
 }
 .name{

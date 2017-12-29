@@ -1,6 +1,17 @@
 #canvas{
   margin: 10px 0 0 30px;
 }
+#select{
+  width: 400px;
+  padding: 0 0 0 30px;
+  position: relative;
+  top: -10px;
+}
+#difficulty{
+  width: 480px;
+  margin: 0 auto;
+  font-size: 15px;
+}
 .notes-description{
   vertical-align: middle;
   height: 84px;

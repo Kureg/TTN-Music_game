@@ -1,14 +1,10 @@
 // 基本情報
 var name = "Rotter Tarmination";
-var musicTime = 0, bpm = 200, soundStart = 300, soundVolume = 30;
+var bpm = 200, soundStart = 300, soundVolume = 30;
 var measureA = 4, measureB = 4;
 var scroll = 1;
-var bpmlist = [], bpmchange = [], bpmchangetime = [];
-var scrolllist = [];
 var noteJudgeTime = 3;
-var max_mode = 5; difficulty = [5, 7, 7, 9, 10];
-var shokou, kousa;
-var auto = true;
+var max_mode = 5, difficulty = [5, 7, 7, 9, 10];
 var notesEasy = [
   [3],
   [0],
@@ -506,4 +502,3 @@ var notesInsaneTwo = [
   [0],
   [0],
 ];
-var notesOne = [], notesTwo = [], notesFive = [], notesEight = [];
